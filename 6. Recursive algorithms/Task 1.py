@@ -49,7 +49,7 @@ def count_inversions(arr):
     return merge_sort(arr, temporary, 0, len(arr) - 1)
 
 
-N = int(input())
-K = [int(input()) for _ in range(N)]
+n = int(input())
+k = [int(input()) for _ in range(n)]
 
-print(count_inversions(K))
+print(count_inversions(k))
