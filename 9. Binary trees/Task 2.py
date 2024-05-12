@@ -204,7 +204,7 @@ class BinaryTree:
         if not (element_for_delete.left and element_for_delete.right):
             parent = element_for_delete.parent_element
             child = element_for_delete.left if element_for_delete.left else element_for_delete.right
-            child.parent = parent
+            child.parent_node = parent
             if parent.left == element_for_delete:
                 parent.left = child
             else:

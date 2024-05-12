@@ -60,16 +60,16 @@ class Tree:
 
     def __delete_node__(self, to_delete):
         if not to_delete.has_child():
-            if to_delete.parent.left == to_delete:
-                to_delete.parent.left = None
-            elif to_delete.parent.right == to_delete:
-                to_delete.parent.right = None
+            if to_delete.parent_node.left == to_delete:
+                to_delete.parent_node.left = None
+            elif to_delete.parent_node.right == to_delete:
+                to_delete.parent_node.right = None
             return
 
         if not (to_delete.left and to_delete.right):
-            par = to_delete.parent
+            par = to_delete.parent_node
             child = to_delete.left if to_delete.left else to_delete.right
-            child.parent = par
+            child.parent_node = par
             if par.left == to_delete:
                 par.left = child
             else:
@@ -131,14 +131,14 @@ class Tree:
                     next = next.left
                 else:
                     next.left = Node(element)
-                    next.left.parent = next
+                    next.left.parent_node = next
                     break
             else:
                 if next.right:
                     next = next.right
                 else:
                     next.right = Node(element)
-                    next.right.parent = next
+                    next.right.parent_node = next
                     break
 
     @classmethod
