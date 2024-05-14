@@ -21,30 +21,35 @@ class Heap:
         return len(self.heap)
 
     def pop(self):
-        if self.heap:
-            self.heap[0], self.heap[-1] = self.heap[-1], self.heap[0]
+        if not self.heap:
+            return None
 
-            needed_index = 0
-            size = len(self.heap)
+        min_element = self.heap[0]
 
-            while True:
-                smallest = needed_index
-                left = 2 * needed_index + 1
-                right = 2 * needed_index + 2
+        self.heap[0] = self.heap[-1]
+        self.heap.pop()
 
-                if left < size and self.heap[left] < self.heap[smallest]:
-                    smallest = left
+        needed_index = 0
+        size = len(self.heap)
 
-                if right < size and self.heap[right] < self.heap[smallest]:
-                    smallest = right
+        while True:
+            smallest = needed_index
+            left = 2 * needed_index + 1
+            right = 2 * needed_index + 2
 
-                if smallest == needed_index:
-                    break
+            if left < size and self.heap[left] < self.heap[smallest]:
+                smallest = left
 
-                self.heap[smallest], self.heap[needed_index] = self.heap[needed_index], self.heap[smallest]
-                needed_index = smallest
+            if right < size and self.heap[right] < self.heap[smallest]:
+                smallest = right
 
-            return self.heap.pop()
+            if smallest == needed_index:
+                break
+
+            self.heap[needed_index], self.heap[smallest] = self.heap[smallest], self.heap[needed_index]
+            needed_index = smallest
+
+        return min_element
 
     def structure(self):
         depth = 0
