@@ -1,46 +1,68 @@
 import heapq
-from collections import defaultdict
+from collections import Counter
 
-def calculate_huffman_code_length(message):
-    # Считаем частоту символов в сообщении
-    frequency = defaultdict(int)
-    for char in message:
-        frequency[char] += 1
 
-    # Создаем мин-кучу
-    heap = [(freq, 0, char) for char, freq in frequency.items()]
-    heapq.heapify(heap)
+class Node:
+    def __init__(self, value=None, weight=0):
+        self.value = value
+        self.weight = weight
+        self.left_node = None
+        self.right_node = None
 
-    if len(heap) == 1:
-        return frequency[heap[0][2]]  # Все символы будут иметь один и тот же код
+    def __lt__(self, other_node):
+        return self.weight < other_node.weight
 
-    # Строим дерево Хаффмана
-    while len(heap) > 1:
-        freq1, type1, left = heapq.heappop(heap)
-        freq2, type2, right = heapq.heappop(heap)
-        heapq.heappush(heap, (freq1 + freq2, 1, (left, right)))
 
-    # Функция для генерации кодов Хаффмана
-    def generate_codes(node, path=""):
-        if isinstance(node, str):
-            return {node: path}
-        left, right = node
-        codes = {}
-        codes.update(generate_codes(left, path + '0'))
-        codes.update(generate_codes(right, path + '1'))
-        return codes
+class HuffmanAlgorithm:
+    def __init__(self, symbols_count):
+        self.root = None
+        self.generate_tree(symbols_count)
 
-    # Получаем корень дерева
-    _, _, root = heap[0]
+    def generate_tree(self, symbols_count):
+        heap = []
 
-    # Генерация кодов Хаффмана
-    huffman_codes = generate_codes(root)
+        for symbol, weight in symbols_count.items():
+            heap.append(Node(symbol, weight))
 
-    # Вычисляем длину закодированного сообщения
-    encoded_length = sum(len(huffman_codes[char]) * frequency[char] for char in message)
+        heapq.heapify(heap)
 
-    return encoded_length
+        while len(heap) > 1:
+            n1 = heapq.heappop(heap)
+            n2 = heapq.heappop(heap)
 
-# Тестирование
-input_message = "abbccc"
-print(calculate_huffman_code_length(input_message))  # Ожидаем увидеть 9
+            merged_weights = Node(weight=n1.weight + n2.weight)
+
+            merged_weights.left_node = n1
+            merged_weights.right_node = n2
+
+            heapq.heappush(heap, merged_weights)
+
+        self.root = heap[0]
+
+    def get_codes(self):
+        needed_codes = {}
+        self._rec_codes(self.root, '', needed_codes)
+
+        return needed_codes
+
+    def _rec_codes(self, node, code, needed_codes):
+        if node.value:
+            needed_codes[node.value] = code
+        else:
+            self._rec_codes(node.left_node, code + '0', needed_codes)
+            self._rec_codes(node.right_node, code + '1', needed_codes)
+
+
+input_string = input()
+
+symbols_count = dict(Counter(input_string))
+
+if len(symbols_count) == 1:
+    print(len(input_string))
+else:
+    huffman = HuffmanAlgorithm(symbols_count)
+    codes = huffman.get_codes()
+
+    result = ''.join(codes[symbol] for symbol in input_string)
+
+    print(len(result))

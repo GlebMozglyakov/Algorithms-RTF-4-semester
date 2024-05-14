@@ -156,7 +156,7 @@ class TreeNode:
 
     def is_last_element(self):
         if self.parent_element:
-            return not (self.parent_element.right == self or self.parent_element.right is None)
+            return not (self.parent_element.right_node == self or self.parent_element.right_node is None)
         return True
 
     def __str__(self):
@@ -194,27 +194,27 @@ class BinaryTree:
 
     def _delete(self, element_for_delete):
         if not element_for_delete.has_child_element():
-            if element_for_delete.parent_element.left == element_for_delete:
-                element_for_delete.parent_element.left = None
-            elif element_for_delete.parent_element.right == element_for_delete:
-                element_for_delete.parent_element.right = None
+            if element_for_delete.parent_element.left_node == element_for_delete:
+                element_for_delete.parent_element.left_node = None
+            elif element_for_delete.parent_element.right_node == element_for_delete:
+                element_for_delete.parent_element.right_node = None
 
             return
 
-        if not (element_for_delete.left and element_for_delete.right):
+        if not (element_for_delete.left_node and element_for_delete.right_node):
             parent = element_for_delete.parent_element
-            child = element_for_delete.left if element_for_delete.left else element_for_delete.right
+            child = element_for_delete.left_node if element_for_delete.left_node else element_for_delete.right_node
             child.parent_node = parent
-            if parent.left == element_for_delete:
-                parent.left = child
+            if parent.left_node == element_for_delete:
+                parent.left_node = child
             else:
-                parent.right = child
+                parent.right_node = child
             return
 
-        replace_elem = element_for_delete.right
+        replace_elem = element_for_delete.right_node
 
-        while replace_elem.left:
-            replace_elem = replace_elem.left
+        while replace_elem.left_node:
+            replace_elem = replace_elem.left_node
 
         element_for_delete.value = replace_elem.value
 
@@ -229,10 +229,10 @@ class BinaryTree:
     def __find__(self, value, node):
         if value == node.value:
             return node
-        elif value < node.value and node.left:
-            return self.__find__(value, node.left)
-        elif value > node.value and node.right:
-            return self.__find__(value, node.right)
+        elif value < node.value and node.left_node:
+            return self.__find__(value, node.left_node)
+        elif value > node.value and node.right_node:
+            return self.__find__(value, node.right_node)
         return None
 
     def next(self, value, node=None) -> Optional[TreeNode]:
@@ -245,14 +245,14 @@ class BinaryTree:
         if node.right:
             next = node.right
 
-            while next.left:
-                next = next.left
+            while next.left_node:
+                next = next.left_node
 
             return next
 
         next = node
 
-        while next.parent_element and next.parent_element.right == next:
+        while next.parent_element and next.parent_element.right_node == next:
             next = next.parent_element
 
         return next.parent_element

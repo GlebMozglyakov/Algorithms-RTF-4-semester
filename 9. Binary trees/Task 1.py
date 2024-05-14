@@ -32,8 +32,8 @@ class BinaryTree:
                 lines = [f"{prefix}{joint}{node.value}"]
                 prefix = prefix + ("    " if is_last else "│   ")
 
-            left_lines = self._get_tree_for_print(node.left, prefix, True, node.right is None)
-            right_lines = self._get_tree_for_print(node.right, prefix, False, True)
+            left_lines = self._get_tree_for_print(node.left_node, prefix, True, node.right_node is None)
+            right_lines = self._get_tree_for_print(node.right_node, prefix, False, True)
 
             if left_lines:
                 lines.extend(left_lines)

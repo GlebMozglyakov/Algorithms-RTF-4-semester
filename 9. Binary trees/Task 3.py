@@ -13,7 +13,7 @@ class TreeNode:
 
     def is_last(self):
         if self.parent:
-            return not (self.parent.right == self or self.parent.right is None)
+            return not (self.parent.right_node == self or self.parent.right_node is None)
         return True
 
     def __str__(self):
@@ -47,11 +47,11 @@ class Tree:
         return nxt.value
 
     def __walk__(self, node, result):
-        if node.left:
-            self.__walk__(node.left, result)
+        if node.left_node:
+            self.__walk__(node.left_node, result)
         result.append(node.value)
-        if node.right:
-            self.__walk__(node.right, result)
+        if node.right_node:
+            self.__walk__(node.right_node, result)
 
     def delete(self, elem):
         to_delete = self.find(elem)
@@ -60,25 +60,25 @@ class Tree:
 
     def __delete_node__(self, to_delete):
         if not to_delete.has_child():
-            if to_delete.parent_node.left == to_delete:
-                to_delete.parent_node.left = None
-            elif to_delete.parent_node.right == to_delete:
-                to_delete.parent_node.right = None
+            if to_delete.parent_node.left_node == to_delete:
+                to_delete.parent_node.left_node = None
+            elif to_delete.parent_node.right_node == to_delete:
+                to_delete.parent_node.right_node = None
             return
 
-        if not (to_delete.left and to_delete.right):
+        if not (to_delete.left_node and to_delete.right_node):
             par = to_delete.parent_node
-            child = to_delete.left if to_delete.left else to_delete.right
+            child = to_delete.left_node if to_delete.left_node else to_delete.right_node
             child.parent_node = par
-            if par.left == to_delete:
-                par.left = child
+            if par.left_node == to_delete:
+                par.left_node = child
             else:
-                par.right = child
+                par.right_node = child
             return
 
-        replace_elem = to_delete.right
-        while replace_elem.left:
-            replace_elem = replace_elem.left
+        replace_elem = to_delete.right_node
+        while replace_elem.left_node:
+            replace_elem = replace_elem.left_node
 
         to_delete.value = replace_elem.value
         self.__delete_node__(replace_elem)
@@ -91,12 +91,12 @@ class Tree:
 
         if node.right:
             nxt = node.right
-            while nxt.left:
-                nxt = nxt.left
+            while nxt.left_node:
+                nxt = nxt.left_node
             return nxt
 
         nxt = node
-        while nxt.parent and nxt.parent.right == nxt:
+        while nxt.parent and nxt.parent.right_node == nxt:
             nxt = nxt.parent
         return nxt.parent
 
@@ -109,10 +109,10 @@ class Tree:
     def __find__(self, elem, node):
         if elem == node.value:
             return node
-        elif elem < node.value and node.left:
-            return self.__find__(elem, node.left)
-        elif elem > node.value and node.right:
-            return self.__find__(elem, node.right)
+        elif elem < node.value and node.left_node:
+            return self.__find__(elem, node.left_node)
+        elif elem > node.value and node.right_node:
+            return self.__find__(elem, node.right_node)
         return None
 
     def add(self, *args):
