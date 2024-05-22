@@ -4,191 +4,214 @@ from typing import Optional
 class TreeNode:
     def __init__(self, value):
         self.value = value
-        self.parent = None
-        self.left = None
-        self.right = None
+        self.left_node = None
+        self.right_node = None
+        self.parent_node = None
 
-    def has_child(self):
-        return self.left or self.right
+    def is_last_element(self):
+        if self.parent_node:
+            return not (self.parent_node.right_node is None or self.parent_node.right_node == self)
 
-    def is_last(self):
-        if self.parent:
-            return not (self.parent.right_node == self or self.parent.right_node is None)
         return True
 
-    def __str__(self):
-        return str(self.value)
+    def get_child_element(self):
+        return self.left_node or self.right_node
 
 
-class Tree:
+class BinaryTree:
     def __init__(self, root: Optional[TreeNode] = None):
         self.root: Optional[TreeNode] = root
 
-    def to_sorted_list(self):
-        result = []
-        if self.root:
-            self.__walk__(self.root, result)
-        return result
+    def build_binary_tree(self, input_array):
+        return BinaryTree(self.__build(input_array))
+
+    def __build(self, array) -> Optional[TreeNode]:
+        array_length = len(array)
+
+        if array_length == 0:
+            return None
+
+        elif array_length == 1:
+            return TreeNode(array[0])
+
+        middle = (array_length // 2) + (array_length % 2) - 1
+
+        center_node = TreeNode(array[middle])
+
+        left = self.__build(array[:middle])
+        right = self.__build(array[middle + 1:])
+
+        if left:
+            center_node.left_node = left
+            left.parent_node = center_node
+
+        if right:
+            center_node.right_node = right
+            right.parent_node = center_node
+
+        return center_node
+
+    def add(self, *args):
+        for value in args:
+            self.__add_value(value)
+
+    def __add_value(self, value):
+        if not self.root:
+            self.root = TreeNode(value)
+            return
+
+        next_node = self.root
+
+        while next_node:
+            if value < next_node.value:
+                if next_node.left_node:
+                    next_node = next_node.left_node
+                else:
+                    next_node.left_node = TreeNode(value)
+                    next_node.left_node.parent_node = next_node
+                    break
+            else:
+                if next_node.right_node:
+                    next_node = next_node.right_node
+                else:
+                    next_node.right_node = TreeNode(value)
+                    next_node.right_node.parent_node = next_node
+                    break
+
+    def delete(self, value):
+        value_for_delete = self.find(value)
+
+        if value_for_delete:
+            self.__delete_value(value_for_delete)
+
+    def __delete_value(self, value_for_delete):
+        if not value_for_delete.get_child_element():
+            if value_for_delete.parent_node.left_node == value_for_delete:
+                value_for_delete.parent_node.left_node = None
+            elif value_for_delete.parent_node.right_node == value_for_delete:
+                value_for_delete.parent_node.right_node = None
+            return
+
+        if not (value_for_delete.right_node and value_for_delete.left_node):
+            parent_node = value_for_delete.parent_node
+
+            if value_for_delete.left_node:
+                child_node = value_for_delete.left_node
+            else:
+                child_node = value_for_delete.right_node
+
+            child_node.parent_node = parent_node
+
+            if parent_node.left_node == value_for_delete:
+                parent_node.left_node = child_node
+            else:
+                parent_node.right_node = child_node
+
+            return
+
+        node_to_replace = value_for_delete.right_node
+
+        while node_to_replace.left_node:
+            node_to_replace = node_to_replace.left_node
+
+        value_for_delete.value = node_to_replace.value
+
+        self.__delete_value(node_to_replace)
+
+    def find(self, value):
+        if not self.root:
+            return None
+
+        return self.__find_node(value, self.root)
+
+    def __find_node(self, value, node):
+        if value == node.value:
+            return node
+        elif node.left_node and value < node.value:
+            return self.__find_node(value, node.left_node)
+        elif node.right_node and value > node.value:
+            return self.__find_node(value, node.right_node)
+
+        return None
 
     def min(self):
         if not self.root:
             return None
-        nxt = self.root
-        while nxt.left:
-            nxt = nxt.left
-        return nxt.value
+
+        next_node = self.root
+
+        while next_node.left_node:
+            next_node = next_node.left_node
+
+        return next_node.value
 
     def max(self):
         if not self.root:
             return None
-        nxt = self.root
-        while nxt.right:
-            nxt = nxt.right
-        return nxt.value
 
-    def __walk__(self, node, result):
+        next_node = self.root
+
+        while next_node.right_node:
+            next_node = next_node.right_node
+
+        return next_node.value
+
+    def list(self):
+        jars = []
+
+        if self.root:
+            self.__get_next_needed_node(self.root, jars)
+
+        return jars
+
+    def __get_next_needed_node(self, node, jars):
         if node.left_node:
-            self.__walk__(node.left_node, result)
-        result.append(node.value)
+            self.__get_next_needed_node(node.left_node, jars)
+
+        jars.append(node.value)
+
         if node.right_node:
-            self.__walk__(node.right_node, result)
-
-    def delete(self, elem):
-        to_delete = self.find(elem)
-        if to_delete:
-            self.__delete_node__(to_delete)
-
-    def __delete_node__(self, to_delete):
-        if not to_delete.has_child():
-            if to_delete.parent_node.left_node == to_delete:
-                to_delete.parent_node.left_node = None
-            elif to_delete.parent_node.right_node == to_delete:
-                to_delete.parent_node.right_node = None
-            return
-
-        if not (to_delete.left_node and to_delete.right_node):
-            par = to_delete.parent_node
-            child = to_delete.left_node if to_delete.left_node else to_delete.right_node
-            child.parent_node = par
-            if par.left_node == to_delete:
-                par.left_node = child
-            else:
-                par.right_node = child
-            return
-
-        replace_elem = to_delete.right_node
-        while replace_elem.left_node:
-            replace_elem = replace_elem.left_node
-
-        to_delete.value = replace_elem.value
-        self.__delete_node__(replace_elem)
-
-    def next(self, elem, node=None) -> Optional[TreeNode]:
-        if not node:
-            node = self.find(elem)
-        if not node:
-            return None
-
-        if node.right:
-            nxt = node.right
-            while nxt.left_node:
-                nxt = nxt.left_node
-            return nxt
-
-        nxt = node
-        while nxt.parent and nxt.parent.right_node == nxt:
-            nxt = nxt.parent
-        return nxt.parent
-
-    def find(self, elem) -> Optional[Node]:
-        if not self.root:
-            return None
-
-        return self.__find__(elem, self.root)
-
-    def __find__(self, elem, node):
-        if elem == node.value:
-            return node
-        elif elem < node.value and node.left_node:
-            return self.__find__(elem, node.left_node)
-        elif elem > node.value and node.right_node:
-            return self.__find__(elem, node.right_node)
-        return None
-
-    def add(self, *args):
-        for elem in args:
-            self.__add_elem__(elem)
-
-    def __add_elem__(self, element):
-        if not self.root:
-            self.root = Node(element)
-            return
-
-        next = self.root
-        while next:
-            if element < next.value:
-                if next.left:
-                    next = next.left
-                else:
-                    next.left = Node(element)
-                    next.left.parent_node = next
-                    break
-            else:
-                if next.right:
-                    next = next.right
-                else:
-                    next.right = Node(element)
-                    next.right.parent_node = next
-                    break
-
-    @classmethod
-    def from_sorted_arr(cls, arr: list):
-        return Tree(cls.__from_sorted(arr))
-
-    @classmethod
-    def __from_sorted(cls, arr: list) -> Optional[TreeNode]:
-        if len(arr) == 0:
-            return None
-        elif len(arr) == 1:
-            return TreeNode(arr[0])
-
-        mid = len(arr) // 2 - 1 + len(arr) % 2
-        center = TreeNode(arr[mid])
-        left = cls.__from_sorted(arr[:mid])
-        right = cls.__from_sorted(arr[mid + 1:])
-        if left:
-            center.left = left
-            left.parent = center
-        if right:
-            center.right = right
-            right.parent = center
-        return center
+            self.__get_next_needed_node(node.right_node, jars)
 
 
-t = Tree.from_sorted_arr(list(map(int, input().split())))
+input_array = list(map(int, input().split()))
+
+binary_ree = BinaryTree()
+binary_ree = binary_ree.build_binary_tree(input_array)
 command = input()
+
 while True:
-    if command.startswith("list"):
-        print(*t.to_sorted_list())
-    elif command.startswith('exit'):
-        break
-    elif command.startswith('add'):
-        args = list(map(int, command.split()[1:]))
-        t.add(*args)
+    if command.startswith('add'):
+        values = list(map(int, command.split()[1:]))
+        binary_ree.add(*values)
         print('Ok')
     elif command.startswith('delete'):
-        t.delete(int(command.split()[1]))
+        value_for_delete = int(command.split()[1])
+        binary_ree.delete(value_for_delete)
         print('Ok')
     elif command.startswith('find'):
-        n = t.find(int(command.split()[1]))
-        if n:
+        weight = int(command.split()[1])
+        jar = binary_ree.find(weight)
+        if jar:
             print('Такая банка есть')
         else:
             print("Такой банки нет")
     elif command.startswith('min'):
-        m = t.min()
-        print(m if m else "Склад пуст")
+        min_value = binary_ree.min()
+        if min_value:
+            print(min_value)
+        else:
+            print("Склад пуст")
     elif command.startswith('max'):
-        m = t.max()
-        print(m if m else "Склад пуст")
+        max_value = binary_ree.max()
+        if max_value:
+            print(max_value)
+        else:
+            print("Склад пуст")
+    elif command.startswith("list"):
+        jars = binary_ree.list()
+        print(*jars)
+    elif command.startswith('exit'):
+        break
+
     command = input()

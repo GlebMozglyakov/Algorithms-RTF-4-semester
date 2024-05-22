@@ -141,6 +141,208 @@
 #     elif command == "print":
 #         tree.print_tree()
 
+# from typing import Optional
+#
+#
+# class TreeNode:
+#     def __init__(self, value):
+#         self.parent_element = None
+#         self.left = None
+#         self.right = None
+#         self.value = value
+#
+#     def has_child_element(self):
+#         return self.left or self.right
+#
+#     def is_last_element(self):
+#         if self.parent_element:
+#             return not (self.parent_element.right_node == self or self.parent_element.right_node is None)
+#         return True
+#
+#     def __str__(self):
+#         return str(self.value)
+#
+#
+# class BinaryTree:
+#     def __init__(self, root: Optional[TreeNode] = None):
+#         self.root: Optional[TreeNode] = root
+#
+#     def add(self, value):
+#         next = self.root
+#
+#         while next:
+#             if value < next.value:
+#                 if next.left:
+#                     next = next.left
+#                 else:
+#                     next.left = TreeNode(value)
+#                     next.left.parent_element = next
+#                     break
+#             else:
+#                 if next.right:
+#                     next = next.right
+#                 else:
+#                     next.right = TreeNode(value)
+#                     next.right.parent_element = next
+#                     break
+#
+#     def delete(self, element):
+#         element_for_delete = self.find(element)
+#
+#         if element_for_delete:
+#             self._delete(element_for_delete)
+#
+#     def _delete(self, element_for_delete):
+#         if not element_for_delete.has_child_element():
+#             if element_for_delete.parent_element.left_node == element_for_delete:
+#                 element_for_delete.parent_element.left_node = None
+#             elif element_for_delete.parent_element.right_node == element_for_delete:
+#                 element_for_delete.parent_element.right_node = None
+#
+#             return
+#
+#         if not (element_for_delete.left_node and element_for_delete.right_node):
+#             parent = element_for_delete.parent_element
+#             child = element_for_delete.left_node if element_for_delete.left_node else element_for_delete.right_node
+#             child.parent_node = parent
+#             if parent.left_node == element_for_delete:
+#                 parent.left_node = child
+#             else:
+#                 parent.right_node = child
+#             return
+#
+#         replace_elem = element_for_delete.right_node
+#
+#         while replace_elem.left_node:
+#             replace_elem = replace_elem.left_node
+#
+#         element_for_delete.value = replace_elem.value
+#
+#         self._delete(replace_elem)
+#
+#     def find(self, element) -> Optional[TreeNode]:
+#         if not self.root:
+#             return None
+#
+#         return self.__find__(element, self.root)
+#
+#     def __find__(self, value, node):
+#         if value == node.value:
+#             return node
+#         elif value < node.value and node.left_node:
+#             return self.__find__(value, node.left_node)
+#         elif value > node.value and node.right_node:
+#             return self.__find__(value, node.right_node)
+#         return None
+#
+#     def next(self, value, node=None) -> Optional[TreeNode]:
+#         if not node:
+#             node = self.find(value)
+#
+#         if not node:
+#             return None
+#
+#         if node.right:
+#             next = node.right
+#
+#             while next.left_node:
+#                 next = next.left_node
+#
+#             return next
+#
+#         next = node
+#
+#         while next.parent_element and next.parent_element.right_node == next:
+#             next = next.parent_element
+#
+#         return next.parent_element
+#
+#     def build_tree(self, array: list) -> Optional[TreeNode]:
+#         if len(array) == 0:
+#             return None
+#         elif len(array) == 1:
+#             return TreeNode(array[0])
+#
+#         middle = len(array) // 2 - 1 + len(array) % 2
+#         center = TreeNode(array[middle])
+#         left = self.build_tree(array[:middle])
+#         right = self.build_tree(array[middle + 1:])
+#
+#         if left:
+#             center.left = left
+#             left.parent_element = center
+#
+#         if right:
+#             center.right = right
+#             right.parent_element = center
+#
+#         return center
+#
+#     def print_tree(self):
+#         result = list()
+#         result.append(str(self.root.value))
+#
+#         prefix = [True]
+#         self._get_tree_for_print(prefix, 0, self.root.left, result)
+#
+#         prefix[0] = False
+#         self._get_tree_for_print(prefix, 0, self.root.right, result)
+#
+#         return "\n".join(result)
+#
+#     def _get_tree_for_print(self, prefixes, depth, node: TreeNode, result):
+#         if node is None:
+#             return
+#         if len(prefixes) == depth + 1:
+#             prefixes.append(True)
+#
+#         result.append(
+#             "".join(['│   ' if i else "    " for i in prefixes[:depth]]) +
+#             ("├───" if node.is_last_element() else "└───") +
+#             str(node)
+#         )
+#         if node.left:
+#             prefixes[depth + 1] = node.right is not None
+#             self._get_tree_for_print(prefixes, depth + 1, node.left, result)
+#         prefixes[depth + 1] = False
+#         if node.right:
+#             self._get_tree_for_print(prefixes, depth + 1, node.right, result)
+#
+#
+# array = list(map(int, input().split()))
+# tree = BinaryTree()
+# tree.root = tree.build_tree(array)
+#
+# command = input()
+#
+# while True:
+#     if command.startswith('exit'):
+#         break
+#     elif command.startswith("print"):
+#         print(tree.print_tree())
+#     elif command.startswith('add'):
+#         values = list(map(int, command.split()[1:]))
+#         for value in values:
+#             tree.add(value)
+#
+#         print("Ok")
+#     elif command.startswith('delete'):
+#         tree.delete(int(command.split()[1]))
+#         print('Ok')
+#     elif command.startswith('find'):
+#         value = int(command.split()[1])
+#
+#         print("Число нашлось" if tree.find(value) else "Число не нашлось")
+#     elif command.startswith('next'):
+#         n = tree.next(int(command.split()[1]))
+#         if n:
+#             print(n.value)
+#         else:
+#             print("Следующего числа нет")
+#
+#     command = input()
+
+
 from typing import Optional
 
 
@@ -154,10 +356,13 @@ class TreeNode:
     def has_child_element(self):
         return self.left or self.right
 
+    def childs_count(self):
+        return int(self.left is not None) + int(self.right is not None)
+
     def is_last_element(self):
         if self.parent_element:
-            return not (self.parent_element.right_node == self or self.parent_element.right_node is None)
-        return True
+            return self.parent_element.right_node == self or self.parent_element.childs_count() == 1
+        return False
 
     def __str__(self):
         return str(self.value)
@@ -298,7 +503,7 @@ class BinaryTree:
 
         result.append(
             "".join(['│   ' if i else "    " for i in prefixes[:depth]]) +
-            ("├───" if node.is_last_element() else "└───") +
+            ("└───" if node.is_last_element() else "├───") +
             str(node)
         )
         if node.left:
