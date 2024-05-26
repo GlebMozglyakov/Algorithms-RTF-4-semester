@@ -26,7 +26,7 @@ needed_node = adjacent_nodes[v]
 visited_nodes = {needed_node}
 get_all_needed_nodes(needed_node, visited_nodes)
 
-result = sorted(visited_nodes, key=lambda e: e.index)
+result = sorted(visited_nodes, key=lambda e: e.line_index)
 result = [x.index for x in result]
 
 print(*result)

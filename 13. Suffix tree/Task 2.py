@@ -50,9 +50,9 @@ class Trie:
 
             if current.is_end_word:
                 if (current.word_count > max_count or
-                            (current.word_count == max_count and len(current.word) < len(best_word)) or
-                            (current.word_count == max_count and len(current.word) == len(best_word) and current.word < best_word)):
-                    best_word = current.word
+                            (current.word_count == max_count and len(current.line) < len(best_word)) or
+                            (current.word_count == max_count and len(current.line) == len(best_word) and current.line < best_word)):
+                    best_word = current.line
                     max_count = current.word_count
             for child in current.children_node.values():
                 visit_nodes.append(child)
