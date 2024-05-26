@@ -1,3 +1,6 @@
+import sys
+
+
 class TrieNode:
     def __init__(self):
         self.children_node = {}
@@ -59,24 +62,44 @@ class Trie:
 
 trie = Trie()
 
-words = input().split()
+all_input_data = sys.stdin.read().splitlines()
+
+words = all_input_data[0].split()
 
 for word in words:
     trie.add(word)
 
-while True:
-    data = input().split()
+commands = all_input_data[1:]
 
-    command = data[0]
+for command in commands:
+    if command.startswith('+'):
+        input_word = command[2:]
+        print(trie.add(input_word))
+    elif command.startswith('?'):
+        input_prefix = command[2:]
+        print(trie.get_best_completion(input_prefix))
+    elif command.startswith('exit'):
+        print('bye')
+        break
 
-    if len(data) > 1:
-        input_char = data[1]
-
-    match command:
-        case '+':
-            print(trie.add(input_char))
-        case '?':
-            print(trie.get_best_completion(input_char))
-        case 'exit':
-            print('bye')
-            break
+# words = input().split()
+#
+# for word in words:
+#     trie.add(word)
+#
+# while True:
+#     data = input().split()
+#
+#     command = data[0]
+#
+#     if len(data) > 1:
+#         input_char = data[1]
+#
+#     match command:
+#         case '+':
+#             print(trie.add(input_char))
+#         case '?':
+#             print(trie.get_best_completion(input_char))
+#         case 'exit':
+#             print('bye')
+#             break
